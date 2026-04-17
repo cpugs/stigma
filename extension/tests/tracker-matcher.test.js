@@ -90,15 +90,21 @@ describe('aggregateTrackers', () => {
 });
 
 describe('getBadgeColor', () => {
-  it('returns green for 0-5 trackers', () => {
-    expect(getBadgeColor(0)).toBe('#4CAF50');
-    expect(getBadgeColor(3)).toBe('#4CAF50');
-    expect(getBadgeColor(5)).toBe('#4CAF50');
+  it('returns blue for 0-3 trackers', () => {
+    expect(getBadgeColor(0)).toBe('#2196F3');
+    expect(getBadgeColor(2)).toBe('#2196F3');
+    expect(getBadgeColor(3)).toBe('#2196F3');
   });
 
-  it('returns yellow for 6-15 trackers', () => {
-    expect(getBadgeColor(6)).toBe('#FF9800');
-    expect(getBadgeColor(10)).toBe('#FF9800');
+  it('returns green for 4-8 trackers', () => {
+    expect(getBadgeColor(4)).toBe('#4CAF50');
+    expect(getBadgeColor(6)).toBe('#4CAF50');
+    expect(getBadgeColor(8)).toBe('#4CAF50');
+  });
+
+  it('returns yellow for 9-15 trackers', () => {
+    expect(getBadgeColor(9)).toBe('#FF9800');
+    expect(getBadgeColor(12)).toBe('#FF9800');
     expect(getBadgeColor(15)).toBe('#FF9800');
   });
 

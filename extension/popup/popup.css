@@ -1,5 +1,7 @@
 /* Stigma popup — privacy extension */
 
+@import url('https://api.fontshare.com/v2/css?f[]=supreme@300,500,700&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -8,53 +10,63 @@
 
 body {
   width: 380px;
-  max-height: 520px;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Supreme', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-weight: 300;
   font-size: 13px;
   color: #1a1a1a;
-  background: #fff;
+  background: #f2f2f2;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
 #ego-popup {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: 520px;
+  max-height: 600px;
+  margin: 0;
 }
 
-/* --- Header --- */
+/* --- Brand Bar --- */
 
-#ego-header {
-  padding: 16px 16px 12px;
-  border-bottom: 1px solid #eee;
+#ego-brand-bar {
+  background: #1a1a1a;
+  padding: 8px 16px;
   flex-shrink: 0;
-}
-
-#ego-header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 #ego-logo {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  margin-right: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #fff;
+}
+
+/* --- Header --- */
+
+#ego-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid #e5e5e5;
+  flex-shrink: 0;
+  background: #fafafa;
+}
+
+#ego-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 #ego-domain {
-  font-size: 12px;
+  font-size: 11px;
   color: #888;
   font-family: 'SF Mono', 'Consolas', monospace;
 }
 
 #ego-count-display {
-  margin-top: 10px;
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -66,13 +78,14 @@ body {
   line-height: 1;
 }
 
+#ego-count-number.severity-blue { color: #2196F3; }
 #ego-count-number.severity-green { color: #4CAF50; }
-#ego-count-number.severity-yellow { color: #E65100; }
+#ego-count-number.severity-yellow { color: #FF9800; }
 #ego-count-number.severity-red { color: #D32F2F; }
 
 #ego-count-label {
   font-size: 13px;
-  color: #666;
+  color: #444;
 }
 
 /* --- Tracker List --- */
@@ -81,6 +94,7 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 8px 0;
+  background: #fff;
 }
 
 #ego-empty-state {
@@ -94,7 +108,7 @@ body {
 }
 
 .ego-tracker-entry {
-  padding: 10px 16px;
+  padding: 10px 10px 14px 16px;
   border-bottom: 1px solid #f5f5f5;
   display: flex;
   justify-content: space-between;
@@ -112,13 +126,13 @@ body {
 }
 
 .ego-tracker-company {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
 }
 
 .ego-tracker-product {
-  color: #888;
-  font-weight: 400;
+  color: #777;
+  font-weight: 300;
   font-size: 12px;
   margin-left: 4px;
 }
@@ -135,7 +149,7 @@ body {
   padding: 2px 6px;
   border-radius: 3px;
   background: #f0f0f0;
-  color: #555;
+  color: #444;
   white-space: nowrap;
 }
 
@@ -144,9 +158,8 @@ body {
   padding: 2px 6px;
   border-radius: 3px;
   color: #fff;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
-  margin-top: 5px;
   display: inline-block;
 }
 
@@ -162,8 +175,9 @@ body {
   border: 1px solid #ddd;
   border-radius: 4px;
   background: #fff;
+  font-family: inherit;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
@@ -175,23 +189,22 @@ body {
 }
 
 .ego-block-btn.blocked {
-  background: #D32F2F;
+  background: #1a1a1a;
   color: #fff;
-  border-color: #D32F2F;
+  border-color: #1a1a1a;
 }
 
 .ego-block-btn.blocked:hover {
-  background: #B71C1C;
+  background: #333;
 }
 
 /* Blocked tracker entry state */
 .ego-tracker-entry.blocked {
-  opacity: 0.45;
+  background: #ebebeb;
 }
 
-.ego-tracker-entry.blocked .ego-tracker-company,
-.ego-tracker-entry.blocked .ego-tracker-product {
-  text-decoration: line-through;
+.ego-tracker-entry.blocked .ego-data-tag {
+  background: #fafafa;
 }
 
 /* Reload banner */
@@ -240,6 +253,10 @@ body {
   font-size: 12px;
   color: #999;
   border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
 /* --- Quick Actions Footer --- */
@@ -254,9 +271,6 @@ body {
 #ego-category-section-label {
   font-size: 11px;
   color: #999;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 #ego-category-toggles {
@@ -274,7 +288,9 @@ body {
   border: 1px solid #ddd;
   border-radius: 6px;
   background: #fff;
+  font-family: inherit;
   font-size: 11px;
+  font-weight: 300;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
@@ -318,39 +334,118 @@ body {
   border-color: #4CAF50;
 }
 
-#ego-gpc-toggle {
+/* Category header row */
+#ego-category-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #eee;
+  margin-bottom: 6px;
 }
 
-#ego-gpc-toggle label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-}
-
-#ego-gpc-checkbox {
-  accent-color: #1a1a1a;
-}
-
-#ego-gpc-info {
-  width: 16px;
-  height: 16px;
+/* Info button (?) */
+.ego-info-btn {
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: #eee;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  color: #999;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  color: #888;
-  cursor: help;
+  transition: all 0.15s;
+  flex-shrink: 0;
 }
+
+.ego-info-btn:hover {
+  border-color: #999;
+  color: #666;
+}
+
+/* GPC row */
+#ego-gpc-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+#ego-gpc-btn {
+  flex: 1;
+  padding: 7px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+#ego-gpc-btn:hover {
+  background: #f5f5f5;
+}
+
+#ego-gpc-btn.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+/* Info Panel */
+/* Attribution */
+#ego-attribution {
+  margin-top: 10px;
+  font-size: 10px;
+  color: #bbb;
+}
+
+#ego-attribution a {
+  color: #999;
+  text-decoration: none;
+}
+
+#ego-attribution a:hover {
+  color: #666;
+  text-decoration: underline;
+}
+
+/* Info Panel — expands downward outside the flex layout */
+#ego-info-panel {
+  background: #fff;
+  border-top: 1px solid #e5e5e5;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+#ego-info-panel.hidden {
+  display: none;
+}
+
+.ego-info-item {
+  font-size: 11px;
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.ego-info-item:last-child {
+  margin-bottom: 0;
+}
+
+.ego-info-item strong {
+  font-weight: 500;
+}
+
+.ego-info-item strong.cat-advertising { color: #F44336; }
+.ego-info-item strong.cat-analytics { color: #2196F3; }
+.ego-info-item strong.cat-social { color: #9C27B0; }
+.ego-info-item strong.cat-fingerprinting { color: #FF9800; }
 
 /* --- Scrollbar --- */
 

@@ -234,6 +234,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const unknownDomains = tabUnknownDomains.get(tabId);
       const unknownCount = unknownDomains ? unknownDomains.size : 0;
 
+      // Sync badge with popup snapshot so numbers always match
+      const count = aggregated.length;
+      chrome.action.setBadgeText({ text: getBadgeCount(count), tabId });
+      chrome.action.setBadgeBackgroundColor({ color: getBadgeColor(count), tabId });
+
       sendResponse({
         trackers: aggregated,
         domain: siteDomain,

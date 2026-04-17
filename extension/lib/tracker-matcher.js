@@ -41,10 +41,11 @@ export function aggregateTrackers(matches) {
 
 /**
  * Get badge background color based on tracker count.
- * Green (0-5), Yellow (6-15), Red (16+)
+ * Blue (0-3), Green (4-8), Yellow (9-15), Red (16+)
  */
 export function getBadgeColor(count) {
-  if (count <= 5) return '#4CAF50';
+  if (count <= 3) return '#2196F3';
+  if (count <= 8) return '#4CAF50';
   if (count <= 15) return '#FF9800';
   return '#F44336';
 }

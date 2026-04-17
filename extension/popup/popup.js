@@ -7,12 +7,54 @@ document.addEventListener('DOMContentLoaded', async () => {
   const trackerList = document.getElementById('ego-tracker-list');
   const emptyState = document.getElementById('ego-empty-state');
   const clearBtn = document.getElementById('ego-clear-data');
-  const gpcCheckbox = document.getElementById('ego-gpc-checkbox');
+  const gpcBtn = document.getElementById('ego-gpc-btn');
   const categoryToggles = document.querySelectorAll('.ego-cat-toggle');
   const reloadBanner = document.getElementById('ego-reload-banner');
   const reloadBtn = document.getElementById('ego-reload-btn');
+  const popup = document.getElementById('ego-popup');
+  const infoPanel = document.getElementById('ego-info-panel');
+  const infoContent = document.getElementById('ego-info-content');
+
+  // --- Info Panel ---
+
+  let activeInfo = null;
+
+  const infoTexts = {
+    categories: `
+      <div class="ego-info-item"><strong class="cat-advertising">Advertising</strong> - Trackers that serve and measure ads. They follow you across sites to build a profile of your interests.</div>
+      <div class="ego-info-item"><strong class="cat-analytics">Analytics</strong> - Scripts that measure how you use a site. They track clicks, scrolling, time on page, and your device.</div>
+      <div class="ego-info-item"><strong class="cat-social">Social</strong> - Embedded widgets (like buttons, feeds, logins) that report your visits back to social platforms.</div>
+      <div class="ego-info-item"><strong class="cat-fingerprinting">Fingerprinting</strong> - Scripts that identify your unique browser without cookies. The hardest tracking to stop.</div>
+    `,
+    gpc: `
+      <div class="ego-info-item"><strong>Global Privacy Control</strong> - A signal sent with every page you visit, telling sites not to sell or share your data. Legally enforceable in California, Colorado, and a growing number of states. Like a universal "do not sell" switch for the entire web.</div>
+    `,
+    unknown: `
+      <div class="ego-info-item"><strong>Unidentified requests</strong> - These are requests made to third-party domains that we can't yet match to a known tracker in our database. Some may be trackers we haven't catalogued yet, others may be harmless services like content delivery or payment processing. We're always expanding our database to identify more of these.</div>
+    `,
+  };
+
+  function toggleInfo(key) {
+    if (activeInfo === key) {
+      infoPanel.classList.add('hidden');
+      popup.classList.remove('info-open');
+      activeInfo = null;
+    } else {
+      infoContent.innerHTML = infoTexts[key];
+      infoPanel.classList.remove('hidden');
+      popup.classList.add('info-open');
+      activeInfo = key;
+    }
+  }
+
+  document.querySelectorAll('.ego-info-btn').forEach(btn => {
+    btn.addEventListener('click', () => toggleInfo(btn.dataset.info));
+  });
 
   // --- Load Data ---
+
+  // Small delay to let any in-flight requests settle before taking a snapshot
+  await new Promise(resolve => setTimeout(resolve, 300));
 
   const { trackers, domain, unknownCount, blockedCategories } = await new Promise((resolve) => {
     chrome.runtime.sendMessage({ type: 'getTrackers' }, resolve);
@@ -45,7 +87,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   countNumber.textContent = count;
   countLabel.textContent = count === 1 ? 'tracker on this page' : 'trackers on this page';
 
-  if (count <= 5) countNumber.className = 'severity-green';
+  if (count <= 3) countNumber.className = 'severity-blue';
+  else if (count <= 8) countNumber.className = 'severity-green';
   else if (count <= 15) countNumber.className = 'severity-yellow';
   else countNumber.className = 'severity-red';
 
@@ -84,9 +127,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       info.appendChild(nameRow);
 
-      // Data type tags
+      // Data type tags — category label first, then data types
       const tags = document.createElement('div');
       tags.className = 'ego-tracker-tags';
+
+      const catLabel = document.createElement('span');
+      catLabel.className = `ego-category-label cat-${tracker.category}`;
+      catLabel.textContent = tracker.category;
+      tags.appendChild(catLabel);
+
       for (const dt of tracker.dataTypes) {
         const tag = document.createElement('span');
         tag.className = 'ego-data-tag';
@@ -94,12 +143,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         tags.appendChild(tag);
       }
       info.appendChild(tags);
-
-      // Category label
-      const catLabel = document.createElement('span');
-      catLabel.className = `ego-category-label cat-${tracker.category}`;
-      catLabel.textContent = tracker.category;
-      info.appendChild(catLabel);
 
       entry.appendChild(info);
 
@@ -137,14 +180,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (unknownCount > 0) {
       const unknownLine = document.createElement('div');
       unknownLine.className = 'ego-unknown-trackers';
-      unknownLine.textContent = `+ ${unknownCount} additional third-party request${unknownCount === 1 ? '' : 's'} detected`;
+
+      const unknownText = document.createElement('span');
+      unknownText.textContent = `+ ${unknownCount} additional third-party request${unknownCount === 1 ? '' : 's'} detected`;
+      unknownLine.appendChild(unknownText);
+
+      const unknownInfoBtn = document.createElement('button');
+      unknownInfoBtn.className = 'ego-info-btn';
+      unknownInfoBtn.dataset.info = 'unknown';
+      unknownInfoBtn.textContent = '?';
+      unknownInfoBtn.addEventListener('click', () => toggleInfo('unknown'));
+      unknownLine.appendChild(unknownInfoBtn);
+
       trackerList.appendChild(unknownLine);
     }
   }
 
   // --- Category Toggles ---
 
-  // Helper to capitalize first letter
   function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
@@ -191,11 +244,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // --- GPC Toggle ---
 
-  gpcCheckbox.checked = prefs.gpcEnabled;
-  gpcCheckbox.addEventListener('change', () => {
+  if (prefs.gpcEnabled) {
+    gpcBtn.classList.add('active');
+    gpcBtn.textContent = 'GPC Opt-Out Active';
+  } else {
+    gpcBtn.textContent = 'Enable GPC Opt-Out';
+  }
+
+  gpcBtn.addEventListener('click', () => {
+    const isActive = gpcBtn.classList.toggle('active');
+    gpcBtn.textContent = isActive ? 'GPC Opt-Out Active' : 'Enable GPC Opt-Out';
     chrome.runtime.sendMessage({
       type: 'toggleGPC',
-      enabled: gpcCheckbox.checked,
+      enabled: isActive,
     });
     showReloadBanner();
   });
