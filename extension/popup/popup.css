@@ -1,0 +1,368 @@
+/* Ego popup — privacy extension */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 380px;
+  max-height: 520px;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  color: #1a1a1a;
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#ego-popup {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 520px;
+}
+
+/* --- Header --- */
+
+#ego-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+#ego-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#ego-logo {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-right: 8px;
+}
+
+#ego-domain {
+  font-size: 12px;
+  color: #888;
+  font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+#ego-count-display {
+  margin-top: 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+#ego-count-number {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+#ego-count-number.severity-green { color: #4CAF50; }
+#ego-count-number.severity-yellow { color: #E65100; }
+#ego-count-number.severity-red { color: #D32F2F; }
+
+#ego-count-label {
+  font-size: 13px;
+  color: #666;
+}
+
+/* --- Tracker List --- */
+
+#ego-tracker-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+#ego-empty-state {
+  padding: 32px 16px;
+  text-align: center;
+  color: #999;
+}
+
+#ego-empty-state.hidden {
+  display: none;
+}
+
+.ego-tracker-entry {
+  padding: 10px 16px;
+  border-bottom: 1px solid #f5f5f5;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ego-tracker-entry:last-child {
+  border-bottom: none;
+}
+
+.ego-tracker-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ego-tracker-company {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.ego-tracker-product {
+  color: #888;
+  font-weight: 400;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.ego-tracker-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.ego-data-tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #f0f0f0;
+  color: #555;
+  white-space: nowrap;
+}
+
+.ego-category-label {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-top: 5px;
+  display: inline-block;
+}
+
+.ego-category-label.cat-advertising { background: #F44336; }
+.ego-category-label.cat-analytics { background: #2196F3; }
+.ego-category-label.cat-social { background: #9C27B0; }
+.ego-category-label.cat-fingerprinting { background: #FF9800; }
+
+/* Block/Unblock button per tracker */
+.ego-block-btn {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.ego-block-btn:hover {
+  background: #f5f5f5;
+}
+
+.ego-block-btn.blocked {
+  background: #D32F2F;
+  color: #fff;
+  border-color: #D32F2F;
+}
+
+.ego-block-btn.blocked:hover {
+  background: #B71C1C;
+}
+
+/* Blocked tracker entry state */
+.ego-tracker-entry.blocked {
+  opacity: 0.45;
+}
+
+.ego-tracker-entry.blocked .ego-tracker-company,
+.ego-tracker-entry.blocked .ego-tracker-product {
+  text-decoration: line-through;
+}
+
+/* Reload banner */
+#ego-reload-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: #FFF3E0;
+  border-bottom: 1px solid #FFE0B2;
+  font-size: 12px;
+  color: #E65100;
+  flex-shrink: 0;
+}
+
+#ego-reload-banner.hidden {
+  display: none;
+}
+
+#ego-reload-btn {
+  padding: 3px 10px;
+  border: 1px solid #E65100;
+  border-radius: 4px;
+  background: #E65100;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#ego-reload-btn:hover {
+  background: #BF360C;
+}
+
+/* Blocked summary line */
+.ego-blocked-summary {
+  padding: 10px 16px;
+  font-size: 12px;
+  color: #999;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Unknown third-party requests line */
+.ego-unknown-trackers {
+  padding: 10px 16px;
+  font-size: 12px;
+  color: #999;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* --- Quick Actions Footer --- */
+
+#ego-actions {
+  border-top: 1px solid #eee;
+  padding: 12px 16px;
+  flex-shrink: 0;
+  background: #fafafa;
+}
+
+#ego-category-section-label {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#ego-category-toggles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.ego-cat-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.ego-cat-toggle:hover {
+  background: #f5f5f5;
+}
+
+.ego-cat-toggle.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+.ego-cat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+#ego-clear-data {
+  padding: 4px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+#ego-clear-data:hover {
+  background: #f5f5f5;
+}
+
+#ego-clear-data.confirmed {
+  background: #4CAF50;
+  color: #fff;
+  border-color: #4CAF50;
+}
+
+#ego-gpc-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+#ego-gpc-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+#ego-gpc-checkbox {
+  accent-color: #1a1a1a;
+}
+
+#ego-gpc-info {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #eee;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #888;
+  cursor: help;
+}
+
+/* --- Scrollbar --- */
+
+#ego-tracker-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+#ego-tracker-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#ego-tracker-list::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 2px;
+}

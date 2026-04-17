@@ -1,0 +1,216 @@
+// Ego popup — fetches tracker data from background, renders UI, handles actions
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const countNumber = document.getElementById('ego-count-number');
+  const countLabel = document.getElementById('ego-count-label');
+  const domainEl = document.getElementById('ego-domain');
+  const trackerList = document.getElementById('ego-tracker-list');
+  const emptyState = document.getElementById('ego-empty-state');
+  const clearBtn = document.getElementById('ego-clear-data');
+  const gpcCheckbox = document.getElementById('ego-gpc-checkbox');
+  const categoryToggles = document.querySelectorAll('.ego-cat-toggle');
+  const reloadBanner = document.getElementById('ego-reload-banner');
+  const reloadBtn = document.getElementById('ego-reload-btn');
+
+  // --- Load Data ---
+
+  const { trackers, domain, unknownCount, blockedCategories } = await new Promise((resolve) => {
+    chrome.runtime.sendMessage({ type: 'getTrackers' }, resolve);
+  });
+
+  const { prefs } = await new Promise((resolve) => {
+    chrome.runtime.sendMessage({ type: 'getPrefs' }, resolve);
+  });
+
+  // --- Reload Banner ---
+
+  function showReloadBanner() {
+    reloadBanner.classList.remove('hidden');
+  }
+
+  reloadBtn.addEventListener('click', () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        chrome.tabs.reload(tabs[0].id);
+        window.close();
+      }
+    });
+  });
+
+  // --- Render Header ---
+
+  domainEl.textContent = domain || 'unknown';
+
+  const count = trackers.length;
+  countNumber.textContent = count;
+  countLabel.textContent = count === 1 ? 'tracker on this page' : 'trackers on this page';
+
+  if (count <= 5) countNumber.className = 'severity-green';
+  else if (count <= 15) countNumber.className = 'severity-yellow';
+  else countNumber.className = 'severity-red';
+
+  // --- Render Tracker List ---
+
+  if (count === 0 && unknownCount === 0) {
+    emptyState.classList.remove('hidden');
+  } else {
+    emptyState.classList.add('hidden');
+
+    // Sort: advertising first, then social, fingerprinting, analytics
+    const categoryOrder = { advertising: 0, social: 1, fingerprinting: 2, analytics: 3 };
+    const sorted = [...trackers].sort((a, b) => {
+      return (categoryOrder[a.category] ?? 99) - (categoryOrder[b.category] ?? 99);
+    });
+
+    for (const tracker of sorted) {
+      const entry = document.createElement('div');
+      entry.className = 'ego-tracker-entry';
+
+      const info = document.createElement('div');
+      info.className = 'ego-tracker-info';
+
+      // Company + product name
+      const nameRow = document.createElement('div');
+      const companySpan = document.createElement('span');
+      companySpan.className = 'ego-tracker-company';
+      companySpan.textContent = tracker.company;
+      nameRow.appendChild(companySpan);
+
+      if (tracker.product) {
+        const productSpan = document.createElement('span');
+        productSpan.className = 'ego-tracker-product';
+        productSpan.textContent = tracker.product;
+        nameRow.appendChild(productSpan);
+      }
+      info.appendChild(nameRow);
+
+      // Data type tags
+      const tags = document.createElement('div');
+      tags.className = 'ego-tracker-tags';
+      for (const dt of tracker.dataTypes) {
+        const tag = document.createElement('span');
+        tag.className = 'ego-data-tag';
+        tag.textContent = dt;
+        tags.appendChild(tag);
+      }
+      info.appendChild(tags);
+
+      // Category label
+      const catLabel = document.createElement('span');
+      catLabel.className = `ego-category-label cat-${tracker.category}`;
+      catLabel.textContent = tracker.category;
+      info.appendChild(catLabel);
+
+      entry.appendChild(info);
+
+      // Block/Unblock button
+      const blockBtn = document.createElement('button');
+      blockBtn.className = 'ego-block-btn';
+      blockBtn.textContent = 'Block';
+
+      blockBtn.addEventListener('click', () => {
+        const isBlocked = blockBtn.classList.toggle('blocked');
+        blockBtn.textContent = isBlocked ? 'Unblock' : 'Block';
+        entry.classList.toggle('blocked', isBlocked);
+        chrome.runtime.sendMessage({
+          type: 'blockTracker',
+          domain: tracker.domain,
+          blocked: isBlocked,
+        });
+        showReloadBanner();
+      });
+
+      entry.appendChild(blockBtn);
+      trackerList.appendChild(entry);
+    }
+
+    // Blocked categories line (shown when categories are actively blocked)
+    if (blockedCategories && blockedCategories.length > 0) {
+      const blockedLine = document.createElement('div');
+      blockedLine.className = 'ego-blocked-summary';
+      const catNames = blockedCategories.map(c => c.charAt(0).toUpperCase() + c.slice(1));
+      blockedLine.textContent = `${catNames.join(', ')} trackers blocked and hidden`;
+      trackerList.appendChild(blockedLine);
+    }
+
+    // Unknown third-party requests line
+    if (unknownCount > 0) {
+      const unknownLine = document.createElement('div');
+      unknownLine.className = 'ego-unknown-trackers';
+      unknownLine.textContent = `+ ${unknownCount} additional third-party request${unknownCount === 1 ? '' : 's'} detected`;
+      trackerList.appendChild(unknownLine);
+    }
+  }
+
+  // --- Category Toggles ---
+
+  // Helper to capitalize first letter
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  categoryToggles.forEach((btn) => {
+    const category = btn.dataset.category;
+    const labelSpan = btn.querySelector('.ego-cat-label');
+
+    function updateCategoryState(isActive) {
+      labelSpan.textContent = isActive
+        ? `Unblock ${capitalize(category)}`
+        : `Block ${capitalize(category)}`;
+
+      // Update visual state of matching tracker entries
+      document.querySelectorAll(`.ego-category-label.cat-${category}`).forEach((label) => {
+        const entry = label.closest('.ego-tracker-entry');
+        if (entry) {
+          entry.classList.toggle('blocked', isActive);
+          const blockBtn = entry.querySelector('.ego-block-btn');
+          if (blockBtn) {
+            blockBtn.classList.toggle('blocked', isActive);
+            blockBtn.textContent = isActive ? 'Unblock' : 'Block';
+          }
+        }
+      });
+    }
+
+    if (prefs.blockedCategories.includes(category)) {
+      btn.classList.add('active');
+      updateCategoryState(true);
+    }
+
+    btn.addEventListener('click', () => {
+      const isActive = btn.classList.toggle('active');
+      chrome.runtime.sendMessage({
+        type: 'toggleCategory',
+        category,
+        blocked: isActive,
+      });
+      updateCategoryState(isActive);
+      showReloadBanner();
+    });
+  });
+
+  // --- GPC Toggle ---
+
+  gpcCheckbox.checked = prefs.gpcEnabled;
+  gpcCheckbox.addEventListener('change', () => {
+    chrome.runtime.sendMessage({
+      type: 'toggleGPC',
+      enabled: gpcCheckbox.checked,
+    });
+    showReloadBanner();
+  });
+
+  // --- Clear Site Data ---
+
+  clearBtn.addEventListener('click', () => {
+    if (!domain) return;
+    chrome.runtime.sendMessage({ type: 'clearSiteData', domain }, () => {
+      clearBtn.textContent = 'Cleared!';
+      clearBtn.classList.add('confirmed');
+      setTimeout(() => {
+        clearBtn.textContent = 'Clear Site Data';
+        clearBtn.classList.remove('confirmed');
+      }, 2000);
+    });
+  });
+});

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="popup.css">
+  <title>Ego</title>
+</head>
+<body>
+  <div id="ego-popup">
+
+    <!-- Header -->
+    <header id="ego-header">
+      <div id="ego-header-top">
+        <div>
+          <span id="ego-logo">ego</span>
+          <span id="ego-domain">loading...</span>
+        </div>
+        <button id="ego-clear-data">Clear Site Data</button>
+      </div>
+      <div id="ego-count-display">
+        <span id="ego-count-number">0</span>
+        <span id="ego-count-label">trackers on this page</span>
+      </div>
+    </header>
+
+    <!-- Reload Banner -->
+    <div id="ego-reload-banner" class="hidden">
+      <span>Reload page to apply changes</span>
+      <button id="ego-reload-btn">Reload</button>
+    </div>
+
+    <!-- Tracker List -->
+    <div id="ego-tracker-list">
+      <div id="ego-empty-state">
+        <p>No trackers detected on this page.</p>
+      </div>
+      <!-- Tracker entries injected here by popup.js -->
+    </div>
+
+    <!-- Global Controls -->
+    <footer id="ego-actions">
+      <div id="ego-category-section-label">Across all sites:</div>
+      <div id="ego-category-toggles">
+        <button class="ego-cat-toggle" data-category="advertising">
+          <span class="ego-cat-dot" style="background:#F44336"></span>
+          <span class="ego-cat-label">Block Advertising</span>
+        </button>
+        <button class="ego-cat-toggle" data-category="analytics">
+          <span class="ego-cat-dot" style="background:#2196F3"></span>
+          <span class="ego-cat-label">Block Analytics</span>
+        </button>
+        <button class="ego-cat-toggle" data-category="social">
+          <span class="ego-cat-dot" style="background:#9C27B0"></span>
+          <span class="ego-cat-label">Block Social</span>
+        </button>
+        <button class="ego-cat-toggle" data-category="fingerprinting">
+          <span class="ego-cat-dot" style="background:#FF9800"></span>
+          <span class="ego-cat-label">Block Fingerprinting</span>
+        </button>
+      </div>
+      <div id="ego-gpc-toggle">
+        <label>
+          <input type="checkbox" id="ego-gpc-checkbox">
+          <span>GPC Opt-Out</span>
+        </label>
+        <span id="ego-gpc-info" title="Global Privacy Control — legally requests sites not to sell your data">?</span>
+      </div>
+    </footer>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

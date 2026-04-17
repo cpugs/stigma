@@ -1,0 +1,534 @@
+{
+  "meta": {
+    "version": "0.1.0",
+    "lastUpdated": "2026-04-16",
+    "sources": ["Disconnect", "WhoTracks.me", "manual curation"],
+    "count": 86
+  },
+  "trackers": {
+    "connect.facebook.net": {
+      "company": "Meta",
+      "product": "Facebook Pixel",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "page interactions", "device info", "location"]
+    },
+    "www.facebook.com": {
+      "company": "Meta",
+      "product": "Facebook Tracking Pixel",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "page interactions", "purchase activity"]
+    },
+    "graph.facebook.com": {
+      "company": "Meta",
+      "product": "Facebook Graph API",
+      "category": "social",
+      "dataTypes": ["browsing history", "social profile", "interactions"]
+    },
+    "www.google-analytics.com": {
+      "company": "Google",
+      "product": "Google Analytics",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "time on site", "location", "device info", "interactions"]
+    },
+    "analytics.google.com": {
+      "company": "Google",
+      "product": "Google Analytics 4",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "time on site", "location", "device info", "interactions"]
+    },
+    "www.googletagmanager.com": {
+      "company": "Google",
+      "product": "Google Tag Manager",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "page interactions", "device info"]
+    },
+    "googleads.g.doubleclick.net": {
+      "company": "Google",
+      "product": "Google Ads",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "search history", "purchase activity", "location"]
+    },
+    "pagead2.googlesyndication.com": {
+      "company": "Google",
+      "product": "Google AdSense",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interests", "device info", "location"]
+    },
+    "adservice.google.com": {
+      "company": "Google",
+      "product": "Google Ad Services",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interests", "device info"]
+    },
+    "fonts.googleapis.com": {
+      "company": "Google",
+      "product": "Google Fonts",
+      "category": "analytics",
+      "dataTypes": ["IP address", "browsing history", "device info"]
+    },
+    "www.googletagservices.com": {
+      "company": "Google",
+      "product": "Google Publisher Tags",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interests", "device info"]
+    },
+    "analytics.tiktok.com": {
+      "company": "TikTok",
+      "product": "TikTok Analytics",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "device info", "interactions", "location"]
+    },
+    "ads.tiktok.com": {
+      "company": "TikTok",
+      "product": "TikTok Ads",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "purchase activity", "device info", "interests"]
+    },
+    "snap.licdn.com": {
+      "company": "LinkedIn",
+      "product": "LinkedIn Insight Tag",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "professional profile", "device info", "IP address"]
+    },
+    "px.ads.linkedin.com": {
+      "company": "LinkedIn",
+      "product": "LinkedIn Ads",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "professional profile", "interactions"]
+    },
+    "platform.twitter.com": {
+      "company": "X (Twitter)",
+      "product": "X Platform",
+      "category": "social",
+      "dataTypes": ["browsing history", "social profile", "interactions", "device info"]
+    },
+    "t.co": {
+      "company": "X (Twitter)",
+      "product": "X Link Tracker",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "link clicks", "IP address"]
+    },
+    "static.ads-twitter.com": {
+      "company": "X (Twitter)",
+      "product": "X Ads Pixel",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "purchase activity", "interactions"]
+    },
+    "bat.bing.com": {
+      "company": "Microsoft",
+      "product": "Microsoft UET Tag",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "search history", "device info", "IP address"]
+    },
+    "clarity.ms": {
+      "company": "Microsoft",
+      "product": "Microsoft Clarity",
+      "category": "analytics",
+      "dataTypes": ["mouse movements", "clicks", "scrolling", "page interactions", "device info"]
+    },
+    "www.clarity.ms": {
+      "company": "Microsoft",
+      "product": "Microsoft Clarity",
+      "category": "analytics",
+      "dataTypes": ["mouse movements", "clicks", "scrolling", "page interactions", "device info"]
+    },
+    "s.amazon-adsystem.com": {
+      "company": "Amazon",
+      "product": "Amazon Ads",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "purchase activity", "interests", "device info"]
+    },
+    "fls.doubleclick.net": {
+      "company": "Google",
+      "product": "DoubleClick Floodlight",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "purchase activity", "interactions"]
+    },
+    "securepubads.g.doubleclick.net": {
+      "company": "Google",
+      "product": "Google Publisher Ads",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interests", "device info", "location"]
+    },
+    "cdn.segment.com": {
+      "company": "Twilio",
+      "product": "Segment",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "interactions", "device info", "identity"]
+    },
+    "api.segment.io": {
+      "company": "Twilio",
+      "product": "Segment",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "interactions", "device info", "identity"]
+    },
+    "cdn.amplitude.com": {
+      "company": "Amplitude",
+      "product": "Amplitude Analytics",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "interactions", "device info", "user journey"]
+    },
+    "cdn.mxpnl.com": {
+      "company": "Mixpanel",
+      "product": "Mixpanel",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "interactions", "device info", "user journey"]
+    },
+    "js.hs-scripts.com": {
+      "company": "HubSpot",
+      "product": "HubSpot Tracking",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "interactions", "email", "device info"]
+    },
+    "js.hsforms.net": {
+      "company": "HubSpot",
+      "product": "HubSpot Forms",
+      "category": "analytics",
+      "dataTypes": ["form submissions", "email", "browsing history"]
+    },
+    "static.hotjar.com": {
+      "company": "Hotjar",
+      "product": "Hotjar",
+      "category": "analytics",
+      "dataTypes": ["mouse movements", "clicks", "scrolling", "form interactions", "device info"]
+    },
+    "script.hotjar.com": {
+      "company": "Hotjar",
+      "product": "Hotjar",
+      "category": "analytics",
+      "dataTypes": ["mouse movements", "clicks", "scrolling", "form interactions", "device info"]
+    },
+    "widget.intercom.io": {
+      "company": "Intercom",
+      "product": "Intercom",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "interactions", "device info", "identity"]
+    },
+    "js.intercomcdn.com": {
+      "company": "Intercom",
+      "product": "Intercom",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "interactions", "device info"]
+    },
+    "sc-static.net": {
+      "company": "Snap",
+      "product": "Snapchat Pixel",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "purchase activity", "device info"]
+    },
+    "tr.snapchat.com": {
+      "company": "Snap",
+      "product": "Snapchat Conversion Tracking",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "purchase activity", "interactions"]
+    },
+    "ct.pinterest.com": {
+      "company": "Pinterest",
+      "product": "Pinterest Tag",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "purchase activity", "interests"]
+    },
+    "cdn.cookielaw.org": {
+      "company": "OneTrust",
+      "product": "OneTrust Cookie Consent",
+      "category": "analytics",
+      "dataTypes": ["consent preferences", "device info", "IP address"]
+    },
+    "cdn.krxd.net": {
+      "company": "Salesforce",
+      "product": "Krux (Salesforce DMP)",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interests", "demographics", "device info"]
+    },
+    "pixel.quantserve.com": {
+      "company": "Quantcast",
+      "product": "Quantcast Measure",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "demographics", "interests", "device info"]
+    },
+    "js.driftt.com": {
+      "company": "Drift",
+      "product": "Drift",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "interactions", "email", "device info"]
+    },
+    "d.turn.com": {
+      "company": "Amobee",
+      "product": "Turn (Amobee)",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interests", "device info"]
+    },
+    "c.bing.com": {
+      "company": "Microsoft",
+      "product": "Bing Tracking",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "search history", "device info", "IP address"]
+    },
+    "pixel.wp.com": {
+      "company": "Automattic",
+      "product": "WordPress.com Stats",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "device info", "IP address"]
+    },
+    "stats.wp.com": {
+      "company": "Automattic",
+      "product": "WordPress.com Stats",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "device info", "IP address"]
+    },
+    "sb.scorecardresearch.com": {
+      "company": "Comscore",
+      "product": "Scorecard Research",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "demographics", "device info"]
+    },
+    "cdn.taboola.com": {
+      "company": "Taboola",
+      "product": "Taboola",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interests", "interactions", "device info"]
+    },
+    "cdn.outbrain.com": {
+      "company": "Outbrain",
+      "product": "Outbrain",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interests", "interactions", "device info"]
+    },
+    "fast.wistia.com": {
+      "company": "Wistia",
+      "product": "Wistia Video Analytics",
+      "category": "analytics",
+      "dataTypes": ["video watching behavior", "interactions", "device info"]
+    },
+    "js.stripe.com": {
+      "company": "Stripe",
+      "product": "Stripe.js",
+      "category": "analytics",
+      "dataTypes": ["device info", "IP address", "browsing context"]
+    },
+    "fp-cdn.azureedge.net": {
+      "company": "FingerprintJS",
+      "product": "FingerprintJS",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "canvas data", "WebGL data", "IP address"]
+    },
+    "api.fpjs.io": {
+      "company": "FingerprintJS",
+      "product": "FingerprintJS Pro",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "canvas data", "WebGL data", "IP address"]
+    },
+    "cdn.cookiebot.com": {
+      "company": "Cookiebot",
+      "product": "Cookiebot",
+      "category": "analytics",
+      "dataTypes": ["consent preferences", "device info", "IP address"]
+    },
+    "sentry.io": {
+      "company": "Sentry",
+      "product": "Sentry Error Tracking",
+      "category": "analytics",
+      "dataTypes": ["error data", "device info", "browsing context", "IP address"]
+    },
+    "rum.browser-intake-datadoghq.com": {
+      "company": "Datadog",
+      "product": "Datadog RUM",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "interactions", "performance data", "device info"]
+    },
+    "plausible.io": {
+      "company": "Plausible",
+      "product": "Plausible Analytics",
+      "category": "analytics",
+      "dataTypes": ["browsing history", "device info"]
+    },
+    "cdn.heapanalytics.com": {
+      "company": "Heap",
+      "product": "Heap Analytics",
+      "category": "analytics",
+      "dataTypes": ["interactions", "browsing history", "form inputs", "device info"]
+    },
+    "js.adsrvr.org": {
+      "company": "The Trade Desk",
+      "product": "Trade Desk Pixel",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interests", "purchase activity", "device info"]
+    },
+    "cdn.branch.io": {
+      "company": "Branch",
+      "product": "Branch Attribution",
+      "category": "analytics",
+      "dataTypes": ["device info", "app interactions", "link clicks", "IP address"]
+    },
+    "www.redditstatic.com": {
+      "company": "Reddit",
+      "product": "Reddit Pixel",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interactions", "device info"]
+    },
+    "alb.reddit.com": {
+      "company": "Reddit",
+      "product": "Reddit Event Tracking",
+      "category": "advertising",
+      "dataTypes": ["browsing history", "interactions", "device info"]
+    },
+
+    "staticxx.facebook.com": {
+      "company": "Meta",
+      "product": "Facebook Social Plugins",
+      "category": "social",
+      "dataTypes": ["browsing history", "social profile", "interactions", "IP address"]
+    },
+    "www.facebook.com": {
+      "company": "Meta",
+      "product": "Facebook Embed",
+      "category": "social",
+      "dataTypes": ["browsing history", "social profile", "interactions", "device info"]
+    },
+    "www.instagram.com": {
+      "company": "Meta",
+      "product": "Instagram Embed",
+      "category": "social",
+      "dataTypes": ["browsing history", "social profile", "interactions", "device info"]
+    },
+    "platform.instagram.com": {
+      "company": "Meta",
+      "product": "Instagram Platform",
+      "category": "social",
+      "dataTypes": ["browsing history", "social profile", "interactions"]
+    },
+    "apis.google.com": {
+      "company": "Google",
+      "product": "Google Sign-In Widget",
+      "category": "social",
+      "dataTypes": ["identity", "browsing history", "device info"]
+    },
+    "accounts.google.com": {
+      "company": "Google",
+      "product": "Google Accounts",
+      "category": "social",
+      "dataTypes": ["identity", "browsing history", "device info"]
+    },
+    "platform.linkedin.com": {
+      "company": "LinkedIn",
+      "product": "LinkedIn Widgets",
+      "category": "social",
+      "dataTypes": ["professional profile", "browsing history", "device info"]
+    },
+    "badges.linkedin.com": {
+      "company": "LinkedIn",
+      "product": "LinkedIn Badges",
+      "category": "social",
+      "dataTypes": ["professional profile", "browsing history"]
+    },
+    "syndication.twitter.com": {
+      "company": "X (Twitter)",
+      "product": "X Embedded Tweets",
+      "category": "social",
+      "dataTypes": ["browsing history", "social profile", "interactions", "device info"]
+    },
+    "embed.tiktok.com": {
+      "company": "TikTok",
+      "product": "TikTok Embed",
+      "category": "social",
+      "dataTypes": ["browsing history", "device info", "interactions"]
+    },
+    "www.tiktok.com": {
+      "company": "TikTok",
+      "product": "TikTok Embed",
+      "category": "social",
+      "dataTypes": ["browsing history", "device info", "interactions"]
+    },
+    "assets.pinterest.com": {
+      "company": "Pinterest",
+      "product": "Pinterest Widgets",
+      "category": "social",
+      "dataTypes": ["browsing history", "interests", "interactions"]
+    },
+    "embed.reddit.com": {
+      "company": "Reddit",
+      "product": "Reddit Embed",
+      "category": "social",
+      "dataTypes": ["browsing history", "interactions", "device info"]
+    },
+    "discord.com": {
+      "company": "Discord",
+      "product": "Discord Widget",
+      "category": "social",
+      "dataTypes": ["browsing history", "device info"]
+    },
+    "e.discord.com": {
+      "company": "Discord",
+      "product": "Discord Events",
+      "category": "social",
+      "dataTypes": ["browsing history", "interactions", "device info"]
+    },
+    "open.spotify.com": {
+      "company": "Spotify",
+      "product": "Spotify Embed",
+      "category": "social",
+      "dataTypes": ["browsing history", "listening activity", "device info"]
+    },
+
+    "arkoselabs.com": {
+      "company": "Arkose Labs",
+      "product": "Arkose Bot Detection",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "IP address", "interaction patterns"]
+    },
+    "client-api.arkoselabs.com": {
+      "company": "Arkose Labs",
+      "product": "Arkose Bot Detection",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "IP address", "interaction patterns"]
+    },
+    "cdn.perimeterx.net": {
+      "company": "PerimeterX (HUMAN)",
+      "product": "HUMAN Bot Defender",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "mouse movements", "IP address"]
+    },
+    "collector-pxh8g2odg7.perimeterx.net": {
+      "company": "PerimeterX (HUMAN)",
+      "product": "HUMAN Bot Defender",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "mouse movements", "IP address"]
+    },
+    "ct.captcha-delivery.com": {
+      "company": "DataDome",
+      "product": "DataDome Bot Protection",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "interaction patterns", "IP address"]
+    },
+    "api-js.datadome.co": {
+      "company": "DataDome",
+      "product": "DataDome Bot Protection",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "interaction patterns", "IP address"]
+    },
+    "js.kasada.io": {
+      "company": "Kasada",
+      "product": "Kasada Bot Defense",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "interaction patterns"]
+    },
+    "t.paypal.com": {
+      "company": "PayPal",
+      "product": "PayPal Fraud Detection",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "IP address"]
+    },
+    "b.stats.paypal.com": {
+      "company": "PayPal",
+      "product": "PayPal Risk Assessment",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "IP address", "browsing context"]
+    },
+    "tags.tiqcdn.com": {
+      "company": "Tealium",
+      "product": "Tealium iQ",
+      "category": "fingerprinting",
+      "dataTypes": ["browser fingerprint", "device info", "browsing history", "identity"]
+    }
+  }
+}
