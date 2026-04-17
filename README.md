@@ -1,8 +1,8 @@
-# Ego
+# Stigma
 
 **See what's tracking you. Take control.**
 
-Ego is a browser extension that shows you exactly what's tracking you on every page you visit — in plain language, not developer jargon. It tells you which companies are watching, what data they're collecting, and gives you simple tools to do something about it.
+Stigma is a browser extension that shows you exactly what's tracking you on every page you visit — in plain language, not developer jargon. It tells you which companies are watching, what data they're collecting, and gives you simple tools to do something about it.
 
 ## Features
 
@@ -28,11 +28,11 @@ Ego is a browser extension that shows you exactly what's tracking you on every p
 
 ## Privacy
 
-Ego runs entirely on your device. It makes zero network requests. The tracker database ships with the extension and is matched locally. We believe a privacy tool should practice what it preaches.
+Stigma runs entirely on your device. It makes zero network requests. The tracker database ships with the extension and is matched locally. We believe a privacy tool should practice what it preaches.
 
 ## Open Source
 
-Ego's core is open source. Read the code, verify our claims, contribute improvements. Future paid features will live in a separate repository.
+Stigma's core is open source. Read the code, verify our claims, contribute improvements. Future paid features will live in a separate repository.
 
 ## Built by
 

@@ -42,7 +42,7 @@ async function init() {
   const response = await fetch(chrome.runtime.getURL('data/trackers.json'));
   const data = await response.json();
   trackerDB = data.trackers;
-  console.log(`Ego: loaded ${Object.keys(trackerDB).length} tracker entries`);
+  console.log(`Stigma: loaded ${Object.keys(trackerDB).length} tracker entries`);
 
   // Load saved preferences
   const stored = await chrome.storage.local.get(['prefs']);

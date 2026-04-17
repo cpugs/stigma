@@ -3,6 +3,6 @@ package-lock.json
 .DS_Store
 *.log
 
-# Private docs (specs, plans, strategy)
+# Private docs (specs, plans, strategy) — excluded from public repo
 docs/
 extension/docs/

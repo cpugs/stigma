@@ -1,4 +1,4 @@
-// Ego popup — fetches tracker data from background, renders UI, handles actions
+// Stigma popup — fetches tracker data from background, renders UI, handles actions
 
 document.addEventListener('DOMContentLoaded', async () => {
   const countNumber = document.getElementById('ego-count-number');

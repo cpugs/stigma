@@ -1,4 +1,4 @@
-// Ego content script — reads cookies, storage, and detects fingerprinting
+// Stigma content script — reads cookies, storage, and detects fingerprinting
 
 (function() {
   'use strict';
