@@ -12,12 +12,6 @@
       "category": "advertising",
       "dataTypes": ["browsing history", "page interactions", "device info", "location"]
     },
-    "www.facebook.com": {
-      "company": "Meta",
-      "product": "Facebook Tracking Pixel",
-      "category": "advertising",
-      "dataTypes": ["browsing history", "page interactions", "purchase activity"]
-    },
     "graph.facebook.com": {
       "company": "Meta",
       "product": "Facebook Graph API",
