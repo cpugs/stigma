@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Stigma",
   "version": "0.1.0",
-  "description": "See what's tracking you. Take control.",
+  "description": "See every tracker on every site in plain language. Block what you don't want. 100% local, open source.",
   "permissions": [
     "activeTab",
     "storage",
