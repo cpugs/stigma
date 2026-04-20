@@ -403,6 +403,10 @@ body {
   margin-top: 10px;
   font-size: 10px;
   color: #bbb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 #ego-attribution a {
