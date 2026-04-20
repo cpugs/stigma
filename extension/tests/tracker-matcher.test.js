@@ -84,6 +84,17 @@ describe('aggregateTrackers', () => {
     expect(result[0].dataTypes).toHaveLength(2);
   });
 
+  it('collects all matched domains into a domains array', () => {
+    const matches = [
+      { domain: 'a.facebook.net', company: 'Meta', product: 'Pixel', category: 'advertising', dataTypes: ['browsing history'] },
+      { domain: 'b.facebook.net', company: 'Meta', product: 'Pixel', category: 'advertising', dataTypes: ['browsing history'] },
+      { domain: 'a.facebook.net', company: 'Meta', product: 'Pixel', category: 'advertising', dataTypes: ['device info'] },
+    ];
+    const result = aggregateTrackers(matches);
+    expect(result).toHaveLength(1);
+    expect(result[0].domains).toEqual(['a.facebook.net', 'b.facebook.net']);
+  });
+
   it('returns empty array for no matches', () => {
     expect(aggregateTrackers([])).toEqual([]);
   });

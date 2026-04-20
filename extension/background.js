@@ -6,6 +6,15 @@ const tabTrackers = new Map();
 // Per-tab unknown third-party domain count: tabId -> Set<domain>
 const tabUnknownDomains = new Map();
 
+// Per-tab timestamp of last top-level navigation start.
+// Used to scope chrome.declarativeNetRequest.getMatchedRules() to the current page.
+const tabLastNav = new Map();
+
+// Reverse index: ruleId -> { domain, tracker, kind }
+// Lets us translate getMatchedRules output back into tracker entries.
+// kind: 'category' | 'individual'
+const ruleIdMap = new Map();
+
 // Domains that are third-party but not trackers (CDNs, fonts, infrastructure)
 const NON_TRACKING_DOMAINS = new Set([
   // CDNs
@@ -33,6 +42,7 @@ let trackerDB = {};
 let prefs = {
   gpcEnabled: false,
   blockedCategories: [],
+  individualBlocks: [], // list of domains the user individually blocked
 };
 
 // --- Initialization ---
@@ -49,14 +59,17 @@ async function init() {
   if (stored.prefs) {
     prefs = { ...prefs, ...stored.prefs };
   }
+  // Defensive: ensure individualBlocks exists even on old stored prefs
+  if (!Array.isArray(prefs.individualBlocks)) prefs.individualBlocks = [];
 
   // Set up GPC rules if enabled
   if (prefs.gpcEnabled) {
     enableGPC();
   }
 
-  // Set up blocking rules for blocked categories
+  // Set up blocking rules for blocked categories + individual blocks
   updateBlockingRules();
+  syncIndividualBlockRules();
 }
 
 init();
@@ -75,12 +88,8 @@ chrome.webRequest.onCompleted.addListener(
 
     // If not in our DB, check if it's a third-party domain (potential unknown tracker)
     if (!tracker) {
-      // Get the tab's own domain to compare
-      const tabDomains = tabTrackers.get(details.tabId);
-      // Only count script/image/xhr requests from other domains as potential trackers
       const isTrackingType = ['script', 'image', 'xmlhttprequest', 'sub_frame', 'ping'].includes(details.type);
       if (isTrackingType && details.tabId >= 0) {
-        // Skip known non-tracking domains
         if (isWhitelistedDomain(domain)) return;
 
         chrome.tabs.get(details.tabId, (tab) => {
@@ -114,6 +123,7 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
   if (details.frameId !== 0) return; // only top-level navigation
   tabTrackers.delete(details.tabId);
   tabUnknownDomains.delete(details.tabId);
+  tabLastNav.set(details.tabId, Date.now());
   updateBadge(details.tabId);
 });
 
@@ -121,6 +131,7 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
 chrome.tabs.onRemoved.addListener((tabId) => {
   tabTrackers.delete(tabId);
   tabUnknownDomains.delete(tabId);
+  tabLastNav.delete(tabId);
 });
 
 // Update badge when switching tabs
@@ -179,8 +190,14 @@ const CATEGORY_RULE_BASE = {
   fingerprinting: 4000,
 };
 
+const INDIVIDUAL_RULE_BASE = 5000;
+const INDIVIDUAL_RULE_BUCKETS = 4000;
+
+function individualRuleId(domain) {
+  return INDIVIDUAL_RULE_BASE + Math.abs(hashCode(domain)) % INDIVIDUAL_RULE_BUCKETS;
+}
+
 function updateBlockingRules() {
-  // Build block rules from tracker DB for each blocked category
   const removeIds = [];
   const addRules = [];
 
@@ -190,23 +207,29 @@ function updateBlockingRules() {
       .filter(([, info]) => info.category === category)
       .map(([domain]) => domain);
 
-    // Remove old rules for this category (up to 500 per category)
+    // Clear any prior ruleIdMap entries for this category's slots
     for (let i = 0; i < 500; i++) {
       removeIds.push(baseId + i);
+      ruleIdMap.delete(baseId + i);
     }
 
-    // Add new rules only if category is blocked
     if (prefs.blockedCategories.includes(category)) {
       domains.forEach((domain, i) => {
-        if (i >= 500) return; // safety cap
+        if (i >= 500) return;
+        const ruleId = baseId + i;
         addRules.push({
-          id: baseId + i,
+          id: ruleId,
           priority: 2,
           action: { type: 'block' },
           condition: {
             urlFilter: `||${domain}`,
             resourceTypes: ['script', 'image', 'xmlhttprequest', 'sub_frame', 'other'],
           },
+        });
+        ruleIdMap.set(ruleId, {
+          domain,
+          tracker: { domain, ...trackerDB[domain] },
+          kind: 'category',
         });
       });
     }
@@ -215,12 +238,41 @@ function updateBlockingRules() {
   chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds: removeIds, addRules });
 }
 
+// Re-create the dynamic rules + ruleIdMap entries for every domain in
+// prefs.individualBlocks. Called at startup so in-memory state matches storage.
+function syncIndividualBlockRules() {
+  const addRules = [];
+  const removeIds = [];
+
+  for (const domain of prefs.individualBlocks) {
+    const ruleId = individualRuleId(domain);
+    removeIds.push(ruleId); // clear any stale rule at this slot first
+    addRules.push({
+      id: ruleId,
+      priority: 3,
+      action: { type: 'block' },
+      condition: {
+        urlFilter: `||${domain}`,
+        resourceTypes: ['script', 'image', 'xmlhttprequest', 'sub_frame', 'other'],
+      },
+    });
+    const dbEntry = trackerDB[domain];
+    ruleIdMap.set(ruleId, {
+      domain,
+      tracker: dbEntry ? { domain, ...dbEntry } : null,
+      kind: 'individual',
+    });
+  }
+
+  if (addRules.length === 0 && removeIds.length === 0) return;
+  chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds: removeIds, addRules });
+}
+
 // --- Message Handling (from popup and content script) ---
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'getTrackers') {
-    // Popup requests tracker list for the active tab
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
       if (!tabs[0]) {
         sendResponse({ trackers: [], domain: '', unknownCount: 0, blockedCategories: [] });
         return;
@@ -228,9 +280,42 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const tabId = tabs[0].id;
       const tabUrl = tabs[0].url || '';
       const siteDomain = extractDomain(tabUrl) || '';
+
+      // Detected trackers (requests that actually completed)
       const trackers = tabTrackers.get(tabId);
-      const matches = trackers ? [...trackers.values()] : [];
-      const aggregated = aggregateTrackers(matches);
+      const detectedMatches = trackers ? [...trackers.values()] : [];
+
+      // Blocked-by-rule trackers: ask the browser which rules fired on this tab
+      const blockedMatches = [];
+      try {
+        const minTimeStamp = tabLastNav.get(tabId) || 0;
+        const res = await chrome.declarativeNetRequest.getMatchedRules({
+          tabId,
+          minTimeStamp,
+        });
+        const seen = new Set();
+        for (const info of res.rulesMatchedInfo || []) {
+          const entry = ruleIdMap.get(info.rule.ruleId);
+          if (!entry || !entry.tracker) continue;
+          if (seen.has(entry.domain)) continue;
+          seen.add(entry.domain);
+          blockedMatches.push(entry.tracker);
+        }
+      } catch (e) {
+        // getMatchedRules may fail (e.g. tab closed). Fall back to detected-only.
+      }
+
+      // Merge + aggregate
+      const aggregated = aggregateTrackers([...detectedMatches, ...blockedMatches]);
+
+      // Mark each aggregated entry as blocked if its category is blocked,
+      // or any of its domains is individually blocked.
+      for (const t of aggregated) {
+        const categoryBlocked = prefs.blockedCategories.includes(t.category);
+        const individuallyBlocked = t.domains.some(d => prefs.individualBlocks.includes(d));
+        t.blocked = categoryBlocked || individuallyBlocked;
+      }
+
       const unknownDomains = tabUnknownDomains.get(tabId);
       const unknownCount = unknownDomains ? unknownDomains.size : 0;
 
@@ -250,9 +335,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === 'contentScriptData') {
-    // Content script reports cookies/storage/fingerprinting findings
-    // Store alongside network-detected trackers for the tab
-    // (future enhancement: merge content script findings into tracker list)
     return false;
   }
 
@@ -293,7 +375,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }, () => {
       sendResponse({ ok: true });
     });
-    return true; // async response
+    return true;
   }
 
   if (message.type === 'getPrefs') {
@@ -302,14 +384,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === 'blockTracker') {
-    // Individual tracker block — add a dynamic rule for this specific domain
-    const { domain, blocked } = message;
-    const ruleId = 5000 + Math.abs(hashCode(domain)) % 4000;
+    // Accepts { domains: [...], blocked } or legacy { domain, blocked }
+    const domainList = Array.isArray(message.domains)
+      ? message.domains
+      : (message.domain ? [message.domain] : []);
+    const { blocked } = message;
 
-    if (blocked) {
-      chrome.declarativeNetRequest.updateDynamicRules({
-        removeRuleIds: [ruleId],
-        addRules: [{
+    const addRules = [];
+    const removeIds = [];
+
+    for (const domain of domainList) {
+      const ruleId = individualRuleId(domain);
+      removeIds.push(ruleId);
+
+      if (blocked) {
+        addRules.push({
           id: ruleId,
           priority: 3,
           action: { type: 'block' },
@@ -317,14 +406,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             urlFilter: `||${domain}`,
             resourceTypes: ['script', 'image', 'xmlhttprequest', 'sub_frame', 'other'],
           },
-        }],
-      });
-    } else {
-      chrome.declarativeNetRequest.updateDynamicRules({
-        removeRuleIds: [ruleId],
-        addRules: [],
-      });
+        });
+        if (!prefs.individualBlocks.includes(domain)) {
+          prefs.individualBlocks.push(domain);
+        }
+        const dbEntry = trackerDB[domain];
+        ruleIdMap.set(ruleId, {
+          domain,
+          tracker: dbEntry ? { domain, ...dbEntry } : null,
+          kind: 'individual',
+        });
+      } else {
+        prefs.individualBlocks = prefs.individualBlocks.filter(d => d !== domain);
+        ruleIdMap.delete(ruleId);
+      }
     }
+
+    chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds: removeIds, addRules });
+    chrome.storage.local.set({ prefs });
     sendResponse({ ok: true });
     return false;
   }
@@ -333,7 +432,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // Check if a domain is whitelisted (exact match or subdomain of a whitelisted domain)
 function isWhitelistedDomain(domain) {
   if (NON_TRACKING_DOMAINS.has(domain)) return true;
-  // Check if it's a subdomain of a whitelisted domain
   for (const whitelisted of NON_TRACKING_DOMAINS) {
     if (domain.endsWith('.' + whitelisted)) return true;
   }

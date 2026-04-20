@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     for (const tracker of sorted) {
       const entry = document.createElement('div');
       entry.className = 'ego-tracker-entry';
+      if (tracker.blocked) entry.classList.add('blocked');
 
       const info = document.createElement('div');
       info.className = 'ego-tracker-info';
@@ -149,7 +150,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Block/Unblock button
       const blockBtn = document.createElement('button');
       blockBtn.className = 'ego-block-btn';
-      blockBtn.textContent = 'Block';
+      if (tracker.blocked) blockBtn.classList.add('blocked');
+      blockBtn.textContent = tracker.blocked ? 'Unblock' : 'Block';
 
       blockBtn.addEventListener('click', () => {
         const isBlocked = blockBtn.classList.toggle('blocked');
@@ -157,7 +159,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         entry.classList.toggle('blocked', isBlocked);
         chrome.runtime.sendMessage({
           type: 'blockTracker',
-          domain: tracker.domain,
+          domains: tracker.domains,
           blocked: isBlocked,
         });
         showReloadBanner();
@@ -165,15 +167,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       entry.appendChild(blockBtn);
       trackerList.appendChild(entry);
-    }
-
-    // Blocked categories line (shown when categories are actively blocked)
-    if (blockedCategories && blockedCategories.length > 0) {
-      const blockedLine = document.createElement('div');
-      blockedLine.className = 'ego-blocked-summary';
-      const catNames = blockedCategories.map(c => c.charAt(0).toUpperCase() + c.slice(1));
-      blockedLine.textContent = `${catNames.join(', ')} trackers blocked and hidden`;
-      trackerList.appendChild(blockedLine);
     }
 
     // Unknown third-party requests line

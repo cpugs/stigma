@@ -22,7 +22,8 @@ export function lookupTracker(domain, trackers) {
 
 /**
  * Deduplicate tracker matches by company+product.
- * Merges dataTypes arrays across duplicates.
+ * Collects all matched domains into a `domains` array and
+ * merges dataTypes across duplicates.
  */
 export function aggregateTrackers(matches) {
   const map = new Map();
@@ -30,10 +31,18 @@ export function aggregateTrackers(matches) {
     const key = `${match.company}::${match.product}`;
     if (map.has(key)) {
       const existing = map.get(key);
+      if (match.domain && !existing.domains.includes(match.domain)) {
+        existing.domains.push(match.domain);
+      }
       const merged = new Set([...existing.dataTypes, ...match.dataTypes]);
       existing.dataTypes = [...merged];
     } else {
-      map.set(key, { ...match, dataTypes: [...match.dataTypes] });
+      const { domain, ...rest } = match;
+      map.set(key, {
+        ...rest,
+        domains: domain ? [domain] : [],
+        dataTypes: [...match.dataTypes],
+      });
     }
   }
   return [...map.values()];
