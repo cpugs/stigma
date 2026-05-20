@@ -26,7 +26,9 @@ Live at [stigma.usual.systems](https://stigma.usual.systems).
 
 ## Install
 
-**From the Chrome Web Store:** coming soon.
+**From the Chrome Web Store:** [chromewebstore.google.com/detail/stigma](https://chromewebstore.google.com/detail/stigma/mldcdagojbfkhbkbecbnkiknfmeggcfm)
+
+**From Firefox Add-ons:** [addons.mozilla.org/addon/stigma-privacy](https://addons.mozilla.org/addon/stigma-privacy)
 
 **From source (development):**
 
